@@ -7,15 +7,58 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		docker-compose.yaml = docker-compose.yaml
 	EndProjectSection
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "restaurent pizza.AppHost", "restaurent pizza.AppHost\restaurent pizza.AppHost.csproj", "{4DB1521D-AD46-4E58-9499-8DB822CE0ADF}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "restaurent pizza.ServiceDefaults", "restaurent pizza.ServiceDefaults\restaurent pizza.ServiceDefaults.csproj", "{72484C07-E873-4008-BDB5-866792CF2750}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
+		Debug|x64 = Debug|x64
+		Debug|x86 = Debug|x86
 		Release|Any CPU = Release|Any CPU
+		Release|x64 = Release|x64
+		Release|x86 = Release|x86
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
 		{F442256B-2C3B-4B0F-A824-E54C9AAF6791}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{F442256B-2C3B-4B0F-A824-E54C9AAF6791}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F442256B-2C3B-4B0F-A824-E54C9AAF6791}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{F442256B-2C3B-4B0F-A824-E54C9AAF6791}.Debug|x64.Build.0 = Debug|Any CPU
+		{F442256B-2C3B-4B0F-A824-E54C9AAF6791}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{F442256B-2C3B-4B0F-A824-E54C9AAF6791}.Debug|x86.Build.0 = Debug|Any CPU
 		{F442256B-2C3B-4B0F-A824-E54C9AAF6791}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{F442256B-2C3B-4B0F-A824-E54C9AAF6791}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F442256B-2C3B-4B0F-A824-E54C9AAF6791}.Release|x64.ActiveCfg = Release|Any CPU
+		{F442256B-2C3B-4B0F-A824-E54C9AAF6791}.Release|x64.Build.0 = Release|Any CPU
+		{F442256B-2C3B-4B0F-A824-E54C9AAF6791}.Release|x86.ActiveCfg = Release|Any CPU
+		{F442256B-2C3B-4B0F-A824-E54C9AAF6791}.Release|x86.Build.0 = Release|Any CPU
+		{4DB1521D-AD46-4E58-9499-8DB822CE0ADF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4DB1521D-AD46-4E58-9499-8DB822CE0ADF}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4DB1521D-AD46-4E58-9499-8DB822CE0ADF}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{4DB1521D-AD46-4E58-9499-8DB822CE0ADF}.Debug|x64.Build.0 = Debug|Any CPU
+		{4DB1521D-AD46-4E58-9499-8DB822CE0ADF}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{4DB1521D-AD46-4E58-9499-8DB822CE0ADF}.Debug|x86.Build.0 = Debug|Any CPU
+		{4DB1521D-AD46-4E58-9499-8DB822CE0ADF}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4DB1521D-AD46-4E58-9499-8DB822CE0ADF}.Release|Any CPU.Build.0 = Release|Any CPU
+		{4DB1521D-AD46-4E58-9499-8DB822CE0ADF}.Release|x64.ActiveCfg = Release|Any CPU
+		{4DB1521D-AD46-4E58-9499-8DB822CE0ADF}.Release|x64.Build.0 = Release|Any CPU
+		{4DB1521D-AD46-4E58-9499-8DB822CE0ADF}.Release|x86.ActiveCfg = Release|Any CPU
+		{4DB1521D-AD46-4E58-9499-8DB822CE0ADF}.Release|x86.Build.0 = Release|Any CPU
+		{72484C07-E873-4008-BDB5-866792CF2750}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{72484C07-E873-4008-BDB5-866792CF2750}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{72484C07-E873-4008-BDB5-866792CF2750}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{72484C07-E873-4008-BDB5-866792CF2750}.Debug|x64.Build.0 = Debug|Any CPU
+		{72484C07-E873-4008-BDB5-866792CF2750}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{72484C07-E873-4008-BDB5-866792CF2750}.Debug|x86.Build.0 = Debug|Any CPU
+		{72484C07-E873-4008-BDB5-866792CF2750}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{72484C07-E873-4008-BDB5-866792CF2750}.Release|Any CPU.Build.0 = Release|Any CPU
+		{72484C07-E873-4008-BDB5-866792CF2750}.Release|x64.ActiveCfg = Release|Any CPU
+		{72484C07-E873-4008-BDB5-866792CF2750}.Release|x64.Build.0 = Release|Any CPU
+		{72484C07-E873-4008-BDB5-866792CF2750}.Release|x86.ActiveCfg = Release|Any CPU
+		{72484C07-E873-4008-BDB5-866792CF2750}.Release|x86.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
 	EndGlobalSection
 EndGlobal
