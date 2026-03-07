@@ -1,0 +1,52 @@
+## .NET Build outputs
+bin/
+obj/
+/packages/
+[Dd]ebug/
+[Rr]elease/
+x64/
+x86/
+[Bb]uild[Ll]og.*
+*.nupkg
+
+## .NET User files
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+*.sln.cache
+
+## IDE - JetBrains Rider
+.idea/
+*.sln.iml
+riderModule.iml
+/_ReSharper.Caches/
+
+## IDE - Visual Studio
+.vs/
+*.rsuser
+
+## User secrets / config locale
+appsettings.*.local.json
+*.pfx
+*.p12
+
+## OS
+Thumbs.db
+.DS_Store
+desktop.ini
+
+## Docker
+.env
+
+## Logs
+*.log
+
+## NuGet
+*.nupkg
+**/[Pp]ackages/*
+!**/[Pp]ackages/build/
+
+## Test results
+[Tt]est[Rr]esult*/
+[Bb]uild[Rr]esults/
