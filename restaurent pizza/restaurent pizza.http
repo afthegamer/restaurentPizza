@@ -1,6 +1,28 @@
-@restaurent_pizza_HostAddress = http://localhost:5024
+@baseUrl = https://localhost:7042
 
-GET {{restaurent_pizza_HostAddress}}/weatherforecast/
+### 1. GET toutes les pizzas
+GET {{baseUrl}}/pizza
 Accept: application/json
 
-###
+### 2. GET une pizza par index
+GET {{baseUrl}}/pizza/0
+Accept: application/json
+
+### 3. POST ajouter une pizza
+POST {{baseUrl}}/pizza
+Content-Type: application/json
+
+"Calzone"
+
+### 4. PUT modifier une pizza (index 0)
+PUT {{baseUrl}}/pizza/0
+Content-Type: application/json
+
+"Margherita Royale"
+
+### 5. DELETE supprimer une pizza (index 2)
+DELETE {{baseUrl}}/pizza/2
+
+### 6. GET pizza inexistante (doit retourner 404)
+GET {{baseUrl}}/pizza/99
+Accept: application/json
