@@ -1,28 +1,37 @@
 @baseUrl = https://localhost:7042
 
-### 1. GET toutes les pizzas
+### 1. GET toutes les pizzas (pour récupérer les Guids)
 GET {{baseUrl}}/pizza
 Accept: application/json
 
-### 2. GET une pizza par index
-GET {{baseUrl}}/pizza/0
-Accept: application/json
-
-### 3. POST ajouter une pizza
+### 2. POST créer une nouvelle pizza
 POST {{baseUrl}}/pizza
 Content-Type: application/json
 
-"Calzone"
+{
+  "name": "Calzone",
+  "description": "Pliée, tomate, mozzarella, jambon",
+  "price": 13.00
+}
 
-### 4. PUT modifier une pizza (index 0)
-PUT {{baseUrl}}/pizza/0
+### 3. GET une pizza par Guid (copie un Id depuis le résultat du GET ci-dessus)
+GET {{baseUrl}}/pizza/004419b4-130d-406e-baca-9d6330ae55ce"
+Accept: application/json
+
+### 4. PUT modifier une pizza (copie un Id depuis le résultat du GET)
+PUT {{baseUrl}}/pizza/e6d7160e-08b8-404b-a74e-054a28b175b0
 Content-Type: application/json
 
-"Margherita Royale"
+{
+  "name": "Margherita Royale",
+  "description": "Tomate, mozzarella di bufala, basilic frais",
+  "price": 11.50,
+  "isAvailable": true
+}
 
-### 5. DELETE supprimer une pizza (index 2)
-DELETE {{baseUrl}}/pizza/2
+### 5. DELETE supprimer une pizza - Soft Delete (copie un Id)
+DELETE {{baseUrl}}/pizza/e6d7160e-08b8-404b-a74e-054a28b175b0
 
-### 6. GET pizza inexistante (doit retourner 404)
-GET {{baseUrl}}/pizza/99
+### 6. GET pizza avec Guid inexistant (doit retourner 404)
+GET {{baseUrl}}/pizza/00000000-0000-0000-0000-000000000000
 Accept: application/json
