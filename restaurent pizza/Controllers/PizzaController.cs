@@ -1,4 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
+using restaurent_pizza.Data;
 using restaurent_pizza.Models;
 using restaurent_pizza.Models.Dtos;
 
@@ -6,73 +8,71 @@ namespace restaurent_pizza.Controllers;
 
 [ApiController]                           // 🔴 ASP.NET — active les conventions API (validation auto, binding auto, réponses 400 auto)
 [Route("[controller]")]                   // 🔴 ASP.NET — la route = /pizza (le nom de la classe sans "Controller")
-public class PizzaController : ControllerBase  // 🔴 ASP.NET — classe de base pour les API (pas Controller, qui est pour MVC avec vues)
+public class PizzaController(PizzaDbContext context) : ControllerBase  // 🔴 ASP.NET + 🟡 EF Core — injection du DbContext via primary constructor
 {
-    // 🔵 C# pur — maintenant une liste de VRAIS objets Pizza (plus de simples strings)
-    // Temporaire en mémoire (on remplacera par PostgreSQL en Phase 4)
-    private static readonly List<Pizza> Pizzas =
-    [
-        Pizza.Create("Margherita", "Tomate, mozzarella, basilic", 9.50m),
-        Pizza.Create("Pepperoni", "Tomate, mozzarella, pepperoni", 11.00m),
-        Pizza.Create("Quatre Fromages", "Mozzarella, gorgonzola, parmesan, chèvre", 12.50m)
-    ];
-
-    // 🔴 ASP.NET — GET /pizza → retourne des PizzaResult (pas des entités !)
+    // GET /pizza → liste des pizzas depuis PostgreSQL
     [HttpGet]
-    public ActionResult<List<PizzaResult>> GetAll()
+    public async Task<ActionResult<List<PizzaResult>>> GetAll(CancellationToken cancellationToken)
     {
-        var results = Pizzas
-            .Where(p => p.DeletedOn == null)          // 🔵 Filtre soft delete (comme au travail)
-            .Select(p => new PizzaResult(p))           // 🔵 Mapping entité → DTO Result
-            .ToList();
-        return Ok(results);                            // 🔴 Ok() = HTTP 200 + sérialise en JSON automatiquement
+        var pizzas = await context.Pizzas                  // 🟡 EF Core — accès à la table Pizzas
+            .Select(p => new PizzaResult(p))               // 🔵 Mapping entité → DTO Result
+            .ToListAsync(cancellationToken);               // 🟡 EF Core — exécute la requête SQL (async)
+        return Ok(pizzas);                                 // 🔴 Ok() = HTTP 200 + sérialise en JSON automatiquement
     }
+    // ⚠️ Plus besoin de .Where(p => p.DeletedOn == null) !
+    // Le Named Query Filter "SoftDelete" dans PizzaConfiguration s'en charge automatiquement.
 
-    // 🔴 ASP.NET — GET /pizza/{id} → par Guid maintenant (plus par index int)
-    [HttpGet("{id:guid}")]                             // 🔴 ASP.NET — contrainte de route : doit être un Guid
-    public ActionResult<PizzaResult> GetById(Guid id)
+    // GET /pizza/{id}
+    [HttpGet("{id:guid}")]                                 // 🔴 ASP.NET — contrainte de route : doit être un Guid
+    public async Task<ActionResult<PizzaResult>> GetById(Guid id, CancellationToken cancellationToken)
     {
-        var pizza = Pizzas.FirstOrDefault(p => p.Id == id && p.DeletedOn == null);
+        var pizza = await context.Pizzas
+            .FirstOrDefaultAsync(p => p.Id == id, cancellationToken);  // 🟡 EF Core — SELECT WHERE Id = ...
         if (pizza == null)
-            return NotFound();                         // 🔴 NotFound() = HTTP 404
-        return Ok(new PizzaResult(pizza));             // 🔵 Mapping entité → Result
+            return NotFound();                             // 🔴 NotFound() = HTTP 404
+        return Ok(new PizzaResult(pizza));                 // 🔵 Mapping entité → Result
     }
 
-    // 🔴 ASP.NET — POST /pizza → reçoit un CreatePizzaDto, retourne un PizzaResult
+    // POST /pizza → crée une pizza en BDD
     [HttpPost]
-    public ActionResult<PizzaResult> Create([FromBody] CreatePizzaDto dto)  // 🔴 [FromBody] = lit le JSON du corps de la requête
+    public async Task<ActionResult<PizzaResult>> Create([FromBody] CreatePizzaDto dto, CancellationToken cancellationToken)  // 🔴 [FromBody] = lit le JSON du corps de la requête
     {
         var pizza = Pizza.Create(dto.Name, dto.Description, dto.Price);  // 🔵 Factory Method !
-        Pizzas.Add(pizza);                             // 🔵 C# pur — ajoute à la liste
-        return CreatedAtAction(                        // 🔴 CreatedAtAction = HTTP 201 + header Location
-            nameof(GetById),                           // 🔵 nameof() = référence compile-time (pas de string magique)
+        context.Pizzas.Add(pizza);                         // 🟡 EF Core — prépare l'INSERT
+        await context.SaveChangesAsync(cancellationToken); // 🟡 EF Core — exécute l'INSERT + auto-timestamp CreatedOn
+        return CreatedAtAction(                            // 🔴 CreatedAtAction = HTTP 201 + header Location
+            nameof(GetById),                               // 🔵 nameof() = référence compile-time (pas de string magique)
             new { id = pizza.Id },
-            new PizzaResult(pizza)                     // Retourne le Result, pas l'entité
+            new PizzaResult(pizza)
         );
     }
 
-    // 🔴 ASP.NET — PUT /pizza/{id} → reçoit un UpdatePizzaDto
+    // PUT /pizza/{id} → modifie une pizza
     [HttpPut("{id:guid}")]
-    public IActionResult Update(Guid id, [FromBody] UpdatePizzaDto dto)  // 🔴 IActionResult = pas de données retournées
+    public async Task<IActionResult> Update(Guid id, [FromBody] UpdatePizzaDto dto, CancellationToken cancellationToken)  // 🔴 IActionResult = pas de données retournées
     {
-        var pizza = Pizzas.FirstOrDefault(p => p.Id == id && p.DeletedOn == null);
+        var pizza = await context.Pizzas
+            .FirstOrDefaultAsync(p => p.Id == id, cancellationToken);
         if (pizza == null) return NotFound();
 
-        pizza.Name = dto.Name;                         // 🔵 Mise à jour manuelle des propriétés
+        pizza.Name = dto.Name;                             // 🔵 Mise à jour des propriétés
         pizza.Description = dto.Description;
         pizza.Price = dto.Price;
         pizza.IsAvailable = dto.IsAvailable;
-        return NoContent();                            // 🔴 NoContent() = HTTP 204 (succès, rien à retourner)
+        await context.SaveChangesAsync(cancellationToken); // 🟡 EF Core — exécute l'UPDATE + auto-timestamp UpdatedOn
+        return NoContent();                                // 🔴 NoContent() = HTTP 204 (succès, rien à retourner)
     }
 
-    // 🔴 ASP.NET — DELETE /pizza/{id} → Soft Delete ! (pas de suppression physique)
+    // DELETE /pizza/{id} → Soft Delete !
     [HttpDelete("{id:guid}")]
-    public IActionResult Delete(Guid id)
+    public async Task<IActionResult> Delete(Guid id, CancellationToken cancellationToken)
     {
-        var pizza = Pizzas.FirstOrDefault(p => p.Id == id && p.DeletedOn == null);
+        var pizza = await context.Pizzas
+            .FirstOrDefaultAsync(p => p.Id == id, cancellationToken);
         if (pizza == null) return NotFound();
 
-        pizza.Delete();                                // 🔵 Soft Delete via la méthode de l'entité !
-        return NoContent();                            // 🔴 HTTP 204
+        pizza.Delete();                                    // 🔵 Soft Delete via la méthode de l'entité !
+        await context.SaveChangesAsync(cancellationToken); // 🟡 EF Core — exécute l'UPDATE (DeletedOn rempli)
+        return NoContent();                                // 🔴 HTTP 204
     }
 }

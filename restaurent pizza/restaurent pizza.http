@@ -15,11 +15,11 @@ Content-Type: application/json
 }
 
 ### 3. GET une pizza par Guid (copie un Id depuis le résultat du GET ci-dessus)
-GET {{baseUrl}}/pizza/004419b4-130d-406e-baca-9d6330ae55ce"
+GET {{baseUrl}}/pizza/40ed382d-3639-4376-90db-41c199922d85
 Accept: application/json
 
 ### 4. PUT modifier une pizza (copie un Id depuis le résultat du GET)
-PUT {{baseUrl}}/pizza/e6d7160e-08b8-404b-a74e-054a28b175b0
+PUT {{baseUrl}}/pizza/40ed382d-3639-4376-90db-41c199922d85
 Content-Type: application/json
 
 {
@@ -30,7 +30,7 @@ Content-Type: application/json
 }
 
 ### 5. DELETE supprimer une pizza - Soft Delete (copie un Id)
-DELETE {{baseUrl}}/pizza/e6d7160e-08b8-404b-a74e-054a28b175b0
+DELETE {{baseUrl}}/pizza/40ed382d-3639-4376-90db-41c199922d85
 
 ### 6. GET pizza avec Guid inexistant (doit retourner 404)
 GET {{baseUrl}}/pizza/00000000-0000-0000-0000-000000000000
