@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using restaurent_pizza.Data;
+using restaurent_pizza.Exceptions;
 using restaurent_pizza.Models;
 using restaurent_pizza.Models.Dtos;
 
@@ -27,9 +28,8 @@ public class PizzaController(PizzaDbContext context) : ControllerBase  // 🔴 A
     public async Task<ActionResult<PizzaResult>> GetById(Guid id, CancellationToken cancellationToken)
     {
         var pizza = await context.Pizzas
-            .FirstOrDefaultAsync(p => p.Id == id, cancellationToken);  // 🟡 EF Core — SELECT WHERE Id = ...
-        if (pizza == null)
-            return NotFound();                             // 🔴 NotFound() = HTTP 404
+            .FirstOrDefaultAsync(p => p.Id == id, cancellationToken)  // 🟡 EF Core — SELECT WHERE Id = ...
+            ?? throw new EntityNotFoundException("Pizza", id);        // 🔵 C# pur — si null → GlobalExceptionFilter → 404 ProblemDetails
         return Ok(new PizzaResult(pizza));                 // 🔵 Mapping entité → Result
     }
 
@@ -52,8 +52,8 @@ public class PizzaController(PizzaDbContext context) : ControllerBase  // 🔴 A
     public async Task<IActionResult> Update(Guid id, [FromBody] UpdatePizzaDto dto, CancellationToken cancellationToken)  // 🔴 IActionResult = pas de données retournées
     {
         var pizza = await context.Pizzas
-            .FirstOrDefaultAsync(p => p.Id == id, cancellationToken);
-        if (pizza == null) return NotFound();
+            .FirstOrDefaultAsync(p => p.Id == id, cancellationToken)
+            ?? throw new EntityNotFoundException("Pizza", id);
 
         pizza.Name = dto.Name;                             // 🔵 Mise à jour des propriétés
         pizza.Description = dto.Description;
@@ -68,8 +68,8 @@ public class PizzaController(PizzaDbContext context) : ControllerBase  // 🔴 A
     public async Task<IActionResult> Delete(Guid id, CancellationToken cancellationToken)
     {
         var pizza = await context.Pizzas
-            .FirstOrDefaultAsync(p => p.Id == id, cancellationToken);
-        if (pizza == null) return NotFound();
+            .FirstOrDefaultAsync(p => p.Id == id, cancellationToken)
+            ?? throw new EntityNotFoundException("Pizza", id);
 
         pizza.Delete();                                    // 🔵 Soft Delete via la méthode de l'entité !
         await context.SaveChangesAsync(cancellationToken); // 🟡 EF Core — exécute l'UPDATE (DeletedOn rempli)

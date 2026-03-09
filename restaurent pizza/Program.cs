@@ -1,5 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using restaurent_pizza.Data;
+using restaurent_pizza.Filters;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -7,7 +8,12 @@ builder.AddServiceDefaults();
 
 builder.Services.AddOpenApi();
 
-builder.Services.AddControllers();  // 🔴 ASP.NET — enregistre le système de Controllers
+// 🔴 ASP.NET — enregistre le GlobalExceptionFilter (comme au travail)
+// 🔴 ASP.NET — enregistre le système de Controllers
+builder.Services.AddControllers(options =>
+{
+    options.Filters.Add(typeof(GlobalExceptionFilter));
+});
 
 builder.AddNpgsqlDbContext<PizzaDbContext>("pizzadb");  // 🟡 Aspire — connecte EF Core à PostgreSQL
 
