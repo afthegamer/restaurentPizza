@@ -15,11 +15,11 @@ Content-Type: application/json
 }
 
 ### 3. GET une pizza par Guid (copie un Id depuis le résultat du GET ci-dessus)
-GET {{baseUrl}}/pizza/40ed382d-3639-4376-90db-41c199922d85
+GET {{baseUrl}}/pizza/b408a5d4-ac61-44a4-af20-dc1e72a496d6
 Accept: application/json
 
 ### 4. PUT modifier une pizza (copie un Id depuis le résultat du GET)
-PUT {{baseUrl}}/pizza/40ed382d-3639-4376-90db-41c199922d85
+PUT {{baseUrl}}/pizza/b408a5d4-ac61-44a4-af20-dc1e72a496d6
 Content-Type: application/json
 
 {

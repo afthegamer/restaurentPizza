@@ -4,6 +4,7 @@ using restaurent_pizza.Data;
 using restaurent_pizza.Exceptions;
 using restaurent_pizza.Models;
 using restaurent_pizza.Models.Dtos;
+using restaurent_pizza.Validators;
 
 namespace restaurent_pizza.Controllers;
 
@@ -37,6 +38,12 @@ public class PizzaController(PizzaDbContext context) : ControllerBase  // 🔴 A
     [HttpPost]
     public async Task<ActionResult<PizzaResult>> Create([FromBody] CreatePizzaDto dto, CancellationToken cancellationToken)  // 🔴 [FromBody] = lit le JSON du corps de la requête
     {
+        // 🟡 FluentValidation — validation manuelle (ValidateAsync, jamais Validate synchrone)
+        var validator = new CreatePizzaValidator();
+        var validationResult = await validator.ValidateAsync(dto, cancellationToken);
+        if (!validationResult.IsValid)
+            return BadRequest(validationResult.Errors);    // 🔴 ASP.NET — HTTP 400 + liste des erreurs
+
         var pizza = Pizza.Create(dto.Name, dto.Description, dto.Price);  // 🔵 Factory Method !
         context.Pizzas.Add(pizza);                         // 🟡 EF Core — prépare l'INSERT
         await context.SaveChangesAsync(cancellationToken); // 🟡 EF Core — exécute l'INSERT + auto-timestamp CreatedOn
@@ -51,9 +58,15 @@ public class PizzaController(PizzaDbContext context) : ControllerBase  // 🔴 A
     [HttpPut("{id:guid}")]
     public async Task<IActionResult> Update(Guid id, [FromBody] UpdatePizzaDto dto, CancellationToken cancellationToken)  // 🔴 IActionResult = pas de données retournées
     {
+        // 🟡 FluentValidation — validation manuelle
+        var validator = new UpdatePizzaValidator();
+        var validationResult = await validator.ValidateAsync(dto, cancellationToken);
+        if (!validationResult.IsValid)
+            return BadRequest(validationResult.Errors);
+
         var pizza = await context.Pizzas
-            .FirstOrDefaultAsync(p => p.Id == id, cancellationToken)
-            ?? throw new EntityNotFoundException("Pizza", id);
+                        .FirstOrDefaultAsync(p => p.Id == id, cancellationToken)  // 🟡 EF Core — cherche par Id
+                    ?? throw new EntityNotFoundException("Pizza", id);         // 🔵 C# pur — null-coalescing throw
 
         pizza.Name = dto.Name;                             // 🔵 Mise à jour des propriétés
         pizza.Description = dto.Description;
