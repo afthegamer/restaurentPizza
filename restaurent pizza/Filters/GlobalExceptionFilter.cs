@@ -1,4 +1,5 @@
-﻿using System.Net;
+﻿using FluentValidation;
+using System.Net;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
 using restaurent_pizza.Exceptions;
@@ -21,10 +22,8 @@ public class GlobalExceptionFilter(ILogger<GlobalExceptionFilter> logger) : IAsy
             Status = context.Exception switch  // 🔵 C# pur — pattern matching switch expression
             {
                 EntityNotFoundException => (int)HttpStatusCode.NotFound,           // 404
-                // On en ajoutera d'autres plus tard :
-                // ValidationException     => (int)HttpStatusCode.BadRequest,      // 400
-                // ForbiddenException      => (int)HttpStatusCode.Forbidden,       // 403
-                _ => (int)HttpStatusCode.InternalServerError                       // 500 par défaut
+                ValidationException     => (int)HttpStatusCode.BadRequest,         // 400
+                _ => (int)HttpStatusCode.InternalServerError                      // 500 par défaut
             }
         };
 

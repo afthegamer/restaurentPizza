@@ -1,24 +1,18 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using restaurent_pizza.Data;
-using restaurent_pizza.Exceptions;
-using restaurent_pizza.Models;
+using Microsoft.AspNetCore.Mvc;
 using restaurent_pizza.Models.Dtos;
-using restaurent_pizza.Validators;
+using restaurent_pizza.Services;
 
 namespace restaurent_pizza.Controllers;
 
 [ApiController]                           // 🔴 ASP.NET — active les conventions API (validation auto, binding auto, réponses 400 auto)
 [Route("[controller]")]                   // 🔴 ASP.NET — la route = /pizza (le nom de la classe sans "Controller")
-public class PizzaController(PizzaDbContext context) : ControllerBase  // 🔴 ASP.NET + 🟡 EF Core — injection du DbContext via primary constructor
+public class PizzaController(IPizzaService pizzaService) : ControllerBase  // 🔴 ASP.NET — injection du service via primary constructor (le Controller ne connaît plus le DbContext !)
 {
     // GET /pizza → liste des pizzas depuis PostgreSQL
     [HttpGet]
     public async Task<ActionResult<List<PizzaResult>>> GetAll(CancellationToken cancellationToken)
     {
-        var pizzas = await context.Pizzas                  // 🟡 EF Core — accès à la table Pizzas
-            .Select(p => new PizzaResult(p))               // 🔵 Mapping entité → DTO Result
-            .ToListAsync(cancellationToken);               // 🟡 EF Core — exécute la requête SQL (async)
+        var pizzas = await pizzaService.GetAllAsync(cancellationToken);  // 🔵 Délègue au service (EF Core, mapping, query filter → tout est dans PizzaService)
         return Ok(pizzas);                                 // 🔴 Ok() = HTTP 200 + sérialise en JSON automatiquement
     }
     // ⚠️ Plus besoin de .Where(p => p.DeletedOn == null) !
@@ -28,29 +22,21 @@ public class PizzaController(PizzaDbContext context) : ControllerBase  // 🔴 A
     [HttpGet("{id:guid}")]                                 // 🔴 ASP.NET — contrainte de route : doit être un Guid
     public async Task<ActionResult<PizzaResult>> GetById(Guid id, CancellationToken cancellationToken)
     {
-        var pizza = await context.Pizzas
-            .FirstOrDefaultAsync(p => p.Id == id, cancellationToken)  // 🟡 EF Core — SELECT WHERE Id = ...
-            ?? throw new EntityNotFoundException("Pizza", id);        // 🔵 C# pur — si null → GlobalExceptionFilter → 404 ProblemDetails
-        return Ok(new PizzaResult(pizza));                 // 🔵 Mapping entité → Result
+        var result = await pizzaService.GetByIdAsync(id, cancellationToken);  // 🔵 Si non trouvé → EntityNotFoundException → GlobalExceptionFilter → 404 ProblemDetails
+        return Ok(result);                                 // 🔵 Mapping entité → Result (fait dans le service)
     }
 
     // POST /pizza → crée une pizza en BDD
     [HttpPost]
     public async Task<ActionResult<PizzaResult>> Create([FromBody] CreatePizzaDto dto, CancellationToken cancellationToken)  // 🔴 [FromBody] = lit le JSON du corps de la requête
     {
-        // 🟡 FluentValidation — validation manuelle (ValidateAsync, jamais Validate synchrone)
-        var validator = new CreatePizzaValidator();
-        var validationResult = await validator.ValidateAsync(dto, cancellationToken);
-        if (!validationResult.IsValid)
-            return BadRequest(validationResult.Errors);    // 🔴 ASP.NET — HTTP 400 + liste des erreurs
-
-        var pizza = Pizza.Create(dto.Name, dto.Description, dto.Price);  // 🔵 Factory Method !
-        context.Pizzas.Add(pizza);                         // 🟡 EF Core — prépare l'INSERT
-        await context.SaveChangesAsync(cancellationToken); // 🟡 EF Core — exécute l'INSERT + auto-timestamp CreatedOn
+        // 🟡 FluentValidation — validation faite dans le service (ValidateAsync, jamais Validate synchrone)
+        // 🔵 Factory Method Pizza.Create() appelé dans le service
+        var result = await pizzaService.CreateAsync(dto, cancellationToken);
         return CreatedAtAction(                            // 🔴 CreatedAtAction = HTTP 201 + header Location
             nameof(GetById),                               // 🔵 nameof() = référence compile-time (pas de string magique)
-            new { id = pizza.Id },
-            new PizzaResult(pizza)
+            new { id = result.Id },
+            result
         );
     }
 
@@ -58,21 +44,8 @@ public class PizzaController(PizzaDbContext context) : ControllerBase  // 🔴 A
     [HttpPut("{id:guid}")]
     public async Task<IActionResult> Update(Guid id, [FromBody] UpdatePizzaDto dto, CancellationToken cancellationToken)  // 🔴 IActionResult = pas de données retournées
     {
-        // 🟡 FluentValidation — validation manuelle
-        var validator = new UpdatePizzaValidator();
-        var validationResult = await validator.ValidateAsync(dto, cancellationToken);
-        if (!validationResult.IsValid)
-            return BadRequest(validationResult.Errors);
-
-        var pizza = await context.Pizzas
-                        .FirstOrDefaultAsync(p => p.Id == id, cancellationToken)  // 🟡 EF Core — cherche par Id
-                    ?? throw new EntityNotFoundException("Pizza", id);         // 🔵 C# pur — null-coalescing throw
-
-        pizza.Name = dto.Name;                             // 🔵 Mise à jour des propriétés
-        pizza.Description = dto.Description;
-        pizza.Price = dto.Price;
-        pizza.IsAvailable = dto.IsAvailable;
-        await context.SaveChangesAsync(cancellationToken); // 🟡 EF Core — exécute l'UPDATE + auto-timestamp UpdatedOn
+        // 🟡 FluentValidation + 🟡 EF Core — validation et mise à jour dans le service
+        await pizzaService.UpdateAsync(id, dto, cancellationToken);
         return NoContent();                                // 🔴 NoContent() = HTTP 204 (succès, rien à retourner)
     }
 
@@ -80,12 +53,8 @@ public class PizzaController(PizzaDbContext context) : ControllerBase  // 🔴 A
     [HttpDelete("{id:guid}")]
     public async Task<IActionResult> Delete(Guid id, CancellationToken cancellationToken)
     {
-        var pizza = await context.Pizzas
-            .FirstOrDefaultAsync(p => p.Id == id, cancellationToken)
-            ?? throw new EntityNotFoundException("Pizza", id);
-
-        pizza.Delete();                                    // 🔵 Soft Delete via la méthode de l'entité !
-        await context.SaveChangesAsync(cancellationToken); // 🟡 EF Core — exécute l'UPDATE (DeletedOn rempli)
+        // 🔵 Soft Delete via la méthode de l'entité (pizza.Delete()) — fait dans le service
+        await pizzaService.DeleteAsync(id, cancellationToken);
         return NoContent();                                // 🔴 HTTP 204
     }
 }
