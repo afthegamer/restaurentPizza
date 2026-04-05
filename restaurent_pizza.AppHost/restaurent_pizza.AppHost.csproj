@@ -13,7 +13,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\restaurent pizza\restaurent pizza.csproj" />
+    <ProjectReference Include="..\restaurent_pizza\restaurent_pizza.csproj" />
   </ItemGroup>
 
 </Project>

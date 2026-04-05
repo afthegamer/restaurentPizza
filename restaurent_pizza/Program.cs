@@ -16,6 +16,7 @@ builder.Services.AddControllers(options =>
     options.Filters.Add(typeof(GlobalExceptionFilter));
 });
 builder.Services.AddDatabaseModule();  // après AddControllers(...)
+builder.Services.AddMediatRModule();    // ← ajouter cette ligne
 
 builder.AddNpgsqlDbContext<PizzaDbContext>("pizzadb");  // 🟡 Aspire — connecte EF Core à PostgreSQL
 
