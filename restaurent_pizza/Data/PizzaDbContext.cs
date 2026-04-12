@@ -14,6 +14,7 @@ public class PizzaDbContext : DbContext
     // 🟡 EF Core — chaque DbSet = une table en BDD
     // Syntaxe => Set<T>() comme au travail (pas { get; set; } = null!)
     public DbSet<Pizza> Pizzas => Set<Pizza>();
+    public DbSet<Category> Categories => Set<Category>();
 
     // 🟡 EF Core — override SaveChangesAsync pour auto-timestamping
     // Comme OnBeforeSaving() au travail : CreatedOn et UpdatedOn sont remplis automatiquement

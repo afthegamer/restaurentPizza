@@ -8,10 +8,14 @@ public class Pizza : BaseEntity
     public decimal Price { get; set; }
     public decimal CostPrice { get; set; }         // 🔒 SECRET — prix d'achat, jamais exposé au client (via DTO plus tard)
     public bool IsAvailable { get; set; } = true;
+    // 🔵 FK + Navigation — une pizza appartient à une catégorie (relation 1:N)
+    public Guid CategoryId { get; set; }               // 🔵 La colonne FK en BDD
+    public Category Category { get; set; } = null!;    // 🔵 Navigation property (chargée par Include)
+
 
     // 🔵 C# pur — Factory Method (comme ActivityReport.Create() ou Holiday.Create() au travail)
     // L'entité contrôle sa propre création : Id et CreatedOn sont TOUJOURS remplis correctement
-    public static Pizza Create(string name, string description, decimal price)
+    public static Pizza Create(string name, string description, decimal price, Guid categoryId)
     {
         return new Pizza
         {
@@ -21,16 +25,10 @@ public class Pizza : BaseEntity
             Price = price,
             CostPrice = 0,
             IsAvailable = true,
+            CategoryId = categoryId,                   // 🔵 Lie la pizza à sa catégorie
             CreatedOn = DateTimeOffset.UtcNow       // 🔵 Timestamp de création (UTC = universel)
         };
     }
 
-    // 🔵 C# pur — Soft Delete (comme WorkContract.Delete() au travail)
-    // On ne supprime PAS de la BDD — on marque une date de suppression
-    public Pizza Delete()
-    {
-        if (DeletedOn == null)                     // 🔵 Seulement si pas déjà supprimé
-            DeletedOn = DateTimeOffset.UtcNow;
-        return this;                               // 🔵 return this = pattern fluent (comme au travail)
-    }
+    // 🔵 Soft Delete → hérité de BaseEntity.Delete() (commun à toutes les entités)
 }

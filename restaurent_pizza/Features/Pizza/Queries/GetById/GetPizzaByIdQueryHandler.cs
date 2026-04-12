@@ -13,6 +13,7 @@ public class GetPizzaByIdQueryHandler(PizzaDbContext context)
     public async Task<PizzaResult> Handle(GetPizzaByIdQuery request, CancellationToken cancellationToken)
     {
         var pizza = await context.Pizzas
+                        .Include(p => p.Category)
                         .FirstOrDefaultAsync(p => p.Id == request.Id, cancellationToken)
                     ?? throw new EntityNotFoundException("Pizza", request.Id);  // 🔵 Même pattern que dans le Service
 

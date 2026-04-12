@@ -11,7 +11,7 @@ public class CreatePizzaCommandHandler(PizzaDbContext context)
     public async Task<PizzaResult> Handle(CreatePizzaCommand request, CancellationToken cancellationToken)
     {
         // 🔵 Factory Method — l'entité contrôle sa propre création
-        var pizza = Models.Pizza.Create(request.Name, request.Description, request.Price);
+        var pizza = Models.Pizza.Create(request.Name, request.Description, request.Price, request.CategoryId);
 
         context.Pizzas.Add(pizza);
         await context.SaveChangesAsync(cancellationToken);

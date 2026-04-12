@@ -8,4 +8,12 @@ public abstract class BaseEntity
     public DateTimeOffset CreatedOn { get; set; }   // 🔵 DateTimeOffset — inclut le fuseau horaire
     public DateTimeOffset? UpdatedOn { get; set; }  // 🔵 Nullable (?) — null tant que pas modifié
     public DateTimeOffset? DeletedOn { get; set; }  // 🔵 Nullable — null = pas supprimé (Soft Delete)
+
+    // 🔵 C# pur — Soft Delete commun à toutes les entités
+    // On ne supprime PAS de la BDD — on marque une date de suppression
+    public void Delete()
+    {
+        if (DeletedOn == null)                     // 🔵 Seulement si pas déjà supprimé
+            DeletedOn = DateTimeOffset.UtcNow;
+    }
 }

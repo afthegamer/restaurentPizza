@@ -15,6 +15,9 @@ public class PizzaResult
         IsAvailable = pizza.IsAvailable;
         IsArchived = pizza.DeletedOn != null;  // Transforme DeletedOn en booléen lisible
         // ⚠️ CostPrice n'est PAS mappé — le client ne le verra JAMAIS
+        CategoryId = pizza.CategoryId;
+        CategoryName = pizza.Category?.Name ?? string.Empty;  // 🔵 ?. = null-safe (si Category pas chargée par Include)
+
     }
 
     public PizzaResult() { }  // Constructeur vide requis pour la désérialisation JSON
@@ -25,4 +28,7 @@ public class PizzaResult
     public decimal Price { get; set; }
     public bool IsAvailable { get; set; }
     public bool IsArchived { get; set; }
+    public Guid CategoryId { get; set; }
+    public string CategoryName { get; set; } = string.Empty;
+
 }

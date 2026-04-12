@@ -12,8 +12,9 @@ public class GetAllPizzasQueryHandler(PizzaDbContext context)
 {
     public async Task<List<PizzaResult>> Handle(GetAllPizzasQuery request, CancellationToken cancellationToken)
     {
-        // 🟡 EF Core — même code que dans PizzaService, mais isolé dans son propre Handler
+        // 🟡 EF Core — Include charge la navigation Category (comme .Include(x => x.WorkContractType) au travail)
         return await context.Pizzas
+            .Include(p => p.Category)
             .Select(p => new PizzaResult(p))
             .ToListAsync(cancellationToken);
     }

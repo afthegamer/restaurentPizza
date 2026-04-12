@@ -17,7 +17,9 @@ public class PizzaConfiguration : IEntityTypeConfiguration<Pizza>
         builder.Property(p => p.Name).IsRequired().HasMaxLength(100); // 🟡 NOT NULL, max 100 chars
         builder.Property(p => p.Description).HasMaxLength(500);       // 🟡 max 500 chars (nullable OK)
         builder.Property(p => p.Price).HasPrecision(10, 2);           // 🟡 decimal(10,2) = 99999999.99 max
-        builder.Property(p => p.CostPrice).HasPrecision(10, 2);      // 🟡 même précision pour le coût
+        builder.Property(p => p.CostPrice).HasPrecision(10, 2);      // 🟡 même précision pour le coût*
+        // 🟡 EF Core — FK vers Category (relation 1:N côté enfant)
+        builder.Property(p => p.CategoryId).IsRequired();
 
         // 🟡 EF Core 10 — Named Query Filter pour le soft delete !
         // Nouveau dans EF Core 10 : on peut nommer le filtre et le désactiver sélectivement

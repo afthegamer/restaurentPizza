@@ -18,5 +18,8 @@ public class CreatePizzaCommandValidator : AbstractValidator<CreatePizzaCommand>
         RuleFor(x => x.Price)
             .GreaterThan(0).WithMessage("Le prix doit être supérieur à 0.")
             .LessThan(1000).WithMessage("Le prix ne peut pas dépasser 999.99€.");
+
+        RuleFor(x => x.CategoryId)
+            .NotEmpty().WithMessage("La catégorie est requise.");  // 🟡 NotEmpty sur Guid = != Guid.Empty
     }
 }
