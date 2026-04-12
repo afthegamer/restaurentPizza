@@ -1,4 +1,5 @@
 ﻿using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using restaurent_pizza.Features.Category.Commands.Create;
 using restaurent_pizza.Features.Category.Commands.Delete;
@@ -11,9 +12,10 @@ namespace restaurent_pizza.Controllers;
 
 [ApiController]
 [Route("[controller]")]
+[Authorize]                               // 🔴 ASP.NET — TOUS les endpoints nécessitent un token JWT valide (sans token → 401)
 public class CategoryController(ISender mediator) : ControllerBase
 {
-    // GET /category
+    // GET /category — tout user connecté (hérite du [Authorize] de la classe)
     [HttpGet]
     public async Task<ActionResult<List<CategoryResult>>> GetAll(CancellationToken cancellationToken)
     {
@@ -29,7 +31,8 @@ public class CategoryController(ISender mediator) : ControllerBase
         return Ok(result);
     }
 
-    // POST /category
+    // POST /category — seul un Admin peut créer une catégorie
+    [Authorize(Roles = "Admin")]           // 🔴 ASP.NET — Client → 403 Forbidden
     [HttpPost]
     public async Task<ActionResult<CategoryResult>> Create([FromBody] CreateCategoryCommand command, CancellationToken cancellationToken)
     {
@@ -37,7 +40,8 @@ public class CategoryController(ISender mediator) : ControllerBase
         return CreatedAtAction(nameof(GetById), new { id = result.Id }, result);
     }
 
-    // PUT /category/{id}
+    // PUT /category/{id} — seul un Admin peut modifier une catégorie
+    [Authorize(Roles = "Admin")]           // 🔴 ASP.NET — Client → 403 Forbidden
     [HttpPut("{id:guid}")]
     public async Task<IActionResult> Update(Guid id, [FromBody] UpdateCategoryCommand command, CancellationToken cancellationToken)
     {
@@ -48,7 +52,8 @@ public class CategoryController(ISender mediator) : ControllerBase
         return NoContent();
     }
 
-    // DELETE /category/{id}
+    // DELETE /category/{id} — seul un Admin peut supprimer une catégorie
+    [Authorize(Roles = "Admin")]           // 🔴 ASP.NET — Client → 403 Forbidden
     [HttpDelete("{id:guid}")]
     public async Task<IActionResult> Delete(Guid id, CancellationToken cancellationToken)
     {

@@ -1,6 +1,6 @@
 ﻿namespace restaurent_pizza.Models;
 
-// 🔵 C# pur — Pizza hérite de BaseEntity (comme ActivityReport : Entity au travail)
+// 🔵 C# pur — Pizza hérite de BaseEntity (toutes les entités héritent de la même base)
 public class Pizza : BaseEntity
 {
     public string Name { get; set; } = string.Empty;
@@ -13,8 +13,7 @@ public class Pizza : BaseEntity
     public Category Category { get; set; } = null!;    // 🔵 Navigation property (chargée par Include)
 
 
-    // 🔵 C# pur — Factory Method (comme ActivityReport.Create() ou Holiday.Create() au travail)
-    // L'entité contrôle sa propre création : Id et CreatedOn sont TOUJOURS remplis correctement
+    // 🔵 C# pur — Factory Method (l'entité contrôle sa propre création : Id et CreatedOn toujours correctement remplis)
     public static Pizza Create(string name, string description, decimal price, Guid categoryId)
     {
         return new Pizza

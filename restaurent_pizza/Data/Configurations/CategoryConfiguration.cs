@@ -15,7 +15,7 @@ public class CategoryConfiguration : IEntityTypeConfiguration<Category>
         builder.Property(c => c.Name).IsRequired().HasMaxLength(100);
         builder.Property(c => c.Description).HasMaxLength(500);
 
-        // 🟡 EF Core — relation 1:N côté parent (comme dans les configurations au travail)
+        // 🟡 EF Core — relation 1:N côté parent (Category a N Pizzas)
         builder.HasMany(c => c.Pizzas)
             .WithOne(p => p.Category)
             .HasForeignKey(p => p.CategoryId)

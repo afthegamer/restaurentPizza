@@ -1,0 +1,22 @@
+{
+  "/auth": {
+    "target": "https://localhost:7042",
+    "secure": false,
+    "changeOrigin": true
+  },
+  "/pizza": {
+    "target": "https://localhost:7042",
+    "secure": false,
+    "changeOrigin": true
+  },
+  "/category": {
+    "target": "https://localhost:7042",
+    "secure": false,
+    "changeOrigin": true
+  },
+  "/order": {
+    "target": "https://localhost:7042",
+    "secure": false,
+    "changeOrigin": true
+  }
+}

@@ -1,8 +1,8 @@
 ﻿namespace restaurent_pizza.Modules;
 
-// 🔵 C# pur — extension method pour regrouper les registrations DI (comme DatabaseModule au travail)
+// 🔵 C# pur — extension method pour regrouper les registrations DI (pattern Module)
 // Chaque module regroupe les services liés à un domaine
-// Au travail : DatabaseModule, RestServicesModule, JobModule, KafkaModule
+// Pattern classique : un module par domaine (DatabaseModule, AuthModule, etc.)
 public static class DatabaseModule
 {
     public static IServiceCollection AddDatabaseModule(this IServiceCollection services)

@@ -1,4 +1,5 @@
 using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using restaurent_pizza.Features.Pizza.Commands.Create;
 using restaurent_pizza.Features.Pizza.Commands.Delete;
@@ -11,7 +12,8 @@ namespace restaurent_pizza.Controllers;
 
 [ApiController]                           // 🔴 ASP.NET — active les conventions API (validation auto, binding auto, réponses 400 auto)
 [Route("[controller]")]                   // 🔴 ASP.NET — la route = /pizza (le nom de la classe sans "Controller")
-public class PizzaController(ISender mediator) : ControllerBase  // 🟡 MediatR — ISender = interface légère (préférée à IMediator, comme au travail)
+[Authorize]                               // 🔴 ASP.NET — TOUS les endpoints nécessitent un token JWT valide (sans token → 401)
+public class PizzaController(ISender mediator) : ControllerBase  // 🟡 MediatR — ISender = interface légère (préférée à IMediator, ne contient que Send)
 {
     // GET /pizza → liste des pizzas depuis PostgreSQL
     [HttpGet]
@@ -32,6 +34,7 @@ public class PizzaController(ISender mediator) : ControllerBase  // 🟡 MediatR
     }
 
     // POST /pizza → crée une pizza en BDD
+    [Authorize(Roles = "Admin")]           // 🔴 ASP.NET — surcharge : seul un Admin peut créer une pizza (Client → 403 Forbidden)
     [HttpPost]
     public async Task<ActionResult<PizzaResult>> Create([FromBody] CreatePizzaCommand command, CancellationToken cancellationToken)  // 🟡 MediatR — le body EST la Command directement
     {
@@ -46,6 +49,7 @@ public class PizzaController(ISender mediator) : ControllerBase  // 🟡 MediatR
     }
 
     // PUT /pizza/{id} → modifie une pizza
+    [Authorize(Roles = "Admin")]           // 🔴 ASP.NET — seul un Admin peut modifier une pizza
     [HttpPut("{id:guid}")]
     public async Task<IActionResult> Update(Guid id, [FromBody] UpdatePizzaCommand command, CancellationToken cancellationToken)  // 🔴 IActionResult = pas de données retournées
     {
@@ -58,6 +62,7 @@ public class PizzaController(ISender mediator) : ControllerBase  // 🟡 MediatR
     }
 
     // DELETE /pizza/{id} → Soft Delete !
+    [Authorize(Roles = "Admin")]           // 🔴 ASP.NET — seul un Admin peut supprimer une pizza
     [HttpDelete("{id:guid}")]
     public async Task<IActionResult> Delete(Guid id, CancellationToken cancellationToken)
     {

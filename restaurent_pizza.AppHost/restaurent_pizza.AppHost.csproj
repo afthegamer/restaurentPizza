@@ -16,4 +16,10 @@
     <ProjectReference Include="..\restaurent_pizza\restaurent_pizza.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Reference Include="Aspire.Hosting">
+      <HintPath>..\..\..\Users\Boulot\.nuget\packages\aspire.hosting\13.1.2\lib\net8.0\Aspire.Hosting.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+
 </Project>

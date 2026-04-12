@@ -6,13 +6,13 @@ using restaurent_pizza.Exceptions;
 
 namespace restaurent_pizza.Filters;
 
-// 🔴 ASP.NET — filtre d'exception global (comme GlobalExceptionFilter au travail)
+// 🔴 ASP.NET — filtre d'exception global (intercepte TOUTES les exceptions non gérées)
 // Intercepte TOUTES les exceptions non gérées et les convertit en ProblemDetails (RFC 7807)
 public class GlobalExceptionFilter(ILogger<GlobalExceptionFilter> logger) : IAsyncExceptionFilter  // 🔴 ASP.NET — primary constructor + injection du logger
 {
     public Task OnExceptionAsync(ExceptionContext context)  // 🔴 ASP.NET — appelé automatiquement quand une exception est lancée
     {
-        // 🔵 C# pur — log l'erreur (comme au travail : logger.LogError)
+        // 🔵 C# pur — log l'erreur avant de la convertir en réponse HTTP
         logger.LogError(context.Exception, context.Exception.Message);
 
         // 🔴 ASP.NET — ProblemDetails = format standard RFC 7807 pour les erreurs HTTP
@@ -21,7 +21,9 @@ public class GlobalExceptionFilter(ILogger<GlobalExceptionFilter> logger) : IAsy
             Detail = context.Exception.Message,
             Status = context.Exception switch  // 🔵 C# pur — pattern matching switch expression
             {
-                EntityNotFoundException => (int)HttpStatusCode.NotFound,           // 404
+                EntityNotFoundException  => (int)HttpStatusCode.NotFound,           // 404
+                AuthenticationException => (int)HttpStatusCode.Unauthorized,       // 401
+                ConflictException       => (int)HttpStatusCode.Conflict,           // 409
                 ValidationException     => (int)HttpStatusCode.BadRequest,         // 400
                 _ => (int)HttpStatusCode.InternalServerError                      // 500 par défaut
             }

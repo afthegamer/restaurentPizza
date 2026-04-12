@@ -1,6 +1,6 @@
 ﻿namespace restaurent_pizza.Exceptions;
 
-// 🔵 C# pur — exception custom (comme EntityNotFoundException au travail)
+// 🔵 C# pur — exception custom → interceptée par GlobalExceptionFilter → HTTP 404
 // Lancée quand on cherche une entité par Id et qu'elle n'existe pas
 public class EntityNotFoundException : Exception
 {

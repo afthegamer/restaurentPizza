@@ -1,10 +1,10 @@
 ﻿namespace restaurent_pizza.Models.Dtos;
 
-// 🔵 C# pur — Result DTO (comme CarouselInfoResult ou EmployeeResult au travail)
-// Nommé "Result" comme au travail (pas "Response" ou "Dto")
+// 🔵 C# pur — Result DTO (ce que l'API retourne au client — filtré, pas l'entité brute)
+// Nommé "Result" par convention (pas "Response" ou "Dto")
 public class PizzaResult
 {
-    // Constructeur mapping depuis l'entité (comme EmployeeResult(Employee employee) au travail)
+    // Constructeur mapping depuis l'entité (pas d'AutoMapper — mapping manuel = contrôle total)
     // PAS d'AutoMapper — mapping manuel = contrôle total sur ce qui est exposé
     public PizzaResult(Pizza pizza)
     {

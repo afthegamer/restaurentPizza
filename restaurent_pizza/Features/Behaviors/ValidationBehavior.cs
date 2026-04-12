@@ -3,7 +3,7 @@ using MediatR;
 
 namespace restaurent_pizza.Features.Behaviors;
 
-// 🟡 MediatR — Pipeline Behavior = middleware (comme au travail)
+// 🟡 MediatR — Pipeline Behavior = middleware qui s'exécute avant chaque Handler
 // Intercepte CHAQUE requête MediatR AVANT le Handler
 // Si des validateurs existent pour ce type de requête → les exécute
 // Si la validation échoue → lance ValidationException → GlobalExceptionFilter → 400

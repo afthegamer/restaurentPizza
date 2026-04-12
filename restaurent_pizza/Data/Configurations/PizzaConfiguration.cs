@@ -5,7 +5,7 @@ using restaurent_pizza.Models;
 namespace restaurent_pizza.Data.Configurations;
 
 // 🟡 EF Core — configuration de la table "Pizzas" en BDD
-// Comme ActivityReportMap ou EmployeeMapping au travail
+// Pattern IEntityTypeConfiguration : une config par entité, séparée du DbContext
 // Trouvée automatiquement par ApplyConfigurationsFromAssembly()
 public class PizzaConfiguration : IEntityTypeConfiguration<Pizza>
 {

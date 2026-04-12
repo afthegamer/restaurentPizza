@@ -2,7 +2,7 @@
 
 namespace restaurent_pizza.Features.Pizza.Commands.Create;
 
-// 🟡 FluentValidation — validateur pour la Command (comme CreateCarouselInfoCommandValidator au travail)
+// 🟡 FluentValidation — validateur pour la Command (1 Command = 1 Validator)
 // Placé dans le même dossier que la Command → feature folder = tout est regroupé
 public class CreatePizzaCommandValidator : AbstractValidator<CreatePizzaCommand>
 {

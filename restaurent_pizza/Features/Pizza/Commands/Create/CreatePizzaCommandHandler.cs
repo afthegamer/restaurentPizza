@@ -4,7 +4,7 @@ using restaurent_pizza.Models.Dtos;
 
 namespace restaurent_pizza.Features.Pizza.Commands.Create;
 
-// 🟡 MediatR — Handler de création (comme CreateCarouselInfoCommandHandler au travail)
+// 🟡 MediatR — Handler de création (reçoit la Command, exécute la logique, retourne le Result)
 public class CreatePizzaCommandHandler(PizzaDbContext context)
     : IRequestHandler<CreatePizzaCommand, PizzaResult>
 {
